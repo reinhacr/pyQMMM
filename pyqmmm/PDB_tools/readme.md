@@ -21,7 +21,7 @@
 
 ## Overview
 
-This code was adapted from https://projects.volkamerlab.org/teachopencadd/talktorials/T008_query_pdb.html, which is a part of a series of wonderful tutorials on X. This code uses several handy tools namely:
+This code was adapted from https://projects.volkamerlab.org/teachopencadd/talktorials/T008_query_pdb.html, which is a part of a series of wonderful tutorials described in this paper (https://jcheminf.biomedcentral.com/articles/10.1186/s13321-019-0351-x). This code uses several handy tools namely:
 
 pypdb Python package (Bioinformatics (2016), 1, 159-60; documentation)
 biotite Python package (BMC Bioinformatics (2018), 19; documentation)
@@ -72,4 +72,5 @@ biotite Python package (BMC Bioinformatics (2018), 19; documentation)
 Author: Clorice R. Reinhardt 
 
 Adapted from X, Y, Z.
+Sydow, D., Morger, A., Driller, M. et al. TeachOpenCADD: a teaching platform for computer-aided drug design using open source packages and data. J Cheminform 11, 29 (2019). https://doi.org/10.1186/s13321-019-0351-x
 
