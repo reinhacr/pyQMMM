@@ -67,8 +67,12 @@ print(pdbs_data[0]["struct"])
 print(pdbs_data[0]["refine"])
 # Pull out properties we are interested in from the metadata PyPdb collected for us
 # Collecting structure keywords, text associated with structure, resolution,
-#title of citation and disulfide bond info currently
-# To Do List: Break down citation information further, get ligands, organism, etc
+#title of citation and disulfide bond info currently, along with some more features
+
+# To Do List: get DOIs, get ligands, organism, etc
+# Additionally, should write data to one single file and add plotting functionality using matplotlib just to 
+# limit amount of external processing user has to do
+# Will turn off excessive printing of data to terminal, this is mainly for testing currently. 
 
 # This is a keyword, i.e "DIOXYGENASE" or "OXIDOREDUCTASE"
 PDB_keywords = pd.DataFrame(
@@ -92,7 +96,7 @@ struct_keywords_text = pd.DataFrame(
 display(struct_keywords_text)
 struct_keywords_text.to_csv(DATA / "struct_keywords_text.csv", header=True, index=False)
 
-# this is the descriptor associated with the molecule, i.e ""
+# this is the descriptor associated with the molecule, i.e "PROTOCATECHUATE 4,5-DIOXYGENASE, 3,4-DIHYDROXYBENZOIC ACID"
 PDBx_descriptor = pd.DataFrame(
     [
         [pdb_data["entry"]["id"], pdb_data["struct"]["pdbx_descriptor"]]
@@ -138,7 +142,7 @@ display(resolution)
 resolution.to_csv(DATA / "PDB_resolution.csv", header=True, index=False)
 
 # inter_mol_metalic_bond_count.
-# turn off print statements later, mainly for testing purposes currently
+
 metal_mol_bonds = pd.DataFrame(
     [
         [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["inter_mol_metalic_bond_count"]]
