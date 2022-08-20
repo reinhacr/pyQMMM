@@ -67,7 +67,7 @@ pdbs_data = [describe_one_pdb_id(pdb_id) for pdb_id in tqdm(pdb_ids)]
 # Pull out properties we are interested in from the metadata PyPdb collected for us
 # Collecting structure keywords, text associated with structure, resolution,
 #title of citation and disulfide bond info currently
-# To Do List: Break down citatin information further, get ligands, organism, etc
+# To Do List: Break down citation information further, get ligands, organism, etc
 
 PDB_keywords = pd.DataFrame(
     [
@@ -100,6 +100,17 @@ display(citation_title)
 citation_title.to_csv(DATA / "citation_titles.csv", header=True, index=False)
 
 
+# S-S bonds. Collecting for modeling purposes.
+ss_bonds = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["disulfide_bond_count"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "disulfide_bond_count"],
+)
+display(ss_bonds)
+ss_bonds.to_csv(DATA / "ss_bond_count.csv", header=True, index=False)
+
 # Resolution
 resolution = pd.DataFrame(
     [
@@ -111,8 +122,10 @@ resolution = pd.DataFrame(
 display(resolution)
 resolution.to_csv(DATA / "PDB_resolution.csv", header=True, index=False)
 
-# Fetch fasta sequence.
+# Fetch fasta sequence. Comment this out if you run the code multiple times and have a large number of files, as downloading will take time. 
 for pdb_id in pdb_ids: 
     rcsb.fetch([pdb_id], "fasta", './data/fasta/')
 
 ## Ligand information isn't working yet
+
+# Add plotting if desired
