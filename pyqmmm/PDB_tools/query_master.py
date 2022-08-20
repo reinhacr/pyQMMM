@@ -112,6 +112,7 @@ display(resolution)
 resolution.to_csv(DATA / "PDB_resolution.csv", header=True, index=False)
 
 # Fetch fasta sequence.
-
+for pdb_id in pdb_ids: 
+    rcsb.fetch([pdb_id], "fasta", './data/fasta/')
 
 ## Ligand information isn't working yet
