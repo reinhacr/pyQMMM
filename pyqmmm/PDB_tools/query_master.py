@@ -24,12 +24,6 @@ from IPython.display import display
 from rdkit.Chem.Draw import IPythonConsole
 IPythonConsole.ipython_useSVG=True
 
-# Code requires defined paths, and a list of PDB IDs in a file. One per line, no extra characters currently, aka 
-"1B4U
-1BOU
-...
-..."
-
 # This code was adapted from https://projects.volkamerlab.org/teachopencadd/talktorials/T008_query_pdb.html
 
 # Our goal here is to pass a list of PDBs I have curated from the PDB and
@@ -71,14 +65,12 @@ def describe_one_pdb_id(pdb_id):
 pdbs_data = [describe_one_pdb_id(pdb_id) for pdb_id in tqdm(pdb_ids)]
 print(pdbs_data[0]["struct"])
 print(pdbs_data[0]["refine"])
+print(pdbs_data[0]["rcsb_primary_citation"])
+
 # Pull out properties we are interested in from the metadata PyPdb collected for us
 # Collecting structure keywords, text associated with structure, resolution,
-#title of citation and disulfide bond info currently, along with some more features
-
-# To Do List: get DOIs, get ligands, organism, etc
-# Additionally, should write data to one single file and add plotting functionality using matplotlib just to 
-# limit amount of external processing user has to do
-# Will turn off excessive printing of data to terminal, this is mainly for testing currently. 
+#title of citation and disulfide bond info currently
+# To Do List: Break down citation information further, get ligands, organism, etc
 
 # This is a keyword, i.e "DIOXYGENASE" or "OXIDOREDUCTASE"
 PDB_keywords = pd.DataFrame(
@@ -102,7 +94,7 @@ struct_keywords_text = pd.DataFrame(
 display(struct_keywords_text)
 struct_keywords_text.to_csv(DATA / "struct_keywords_text.csv", header=True, index=False)
 
-# this is the descriptor associated with the molecule, i.e "PROTOCATECHUATE 4,5-DIOXYGENASE, 3,4-DIHYDROXYBENZOIC ACID"
+# this is the descriptor associated with the molecule, i.e ""
 PDBx_descriptor = pd.DataFrame(
     [
         [pdb_data["entry"]["id"], pdb_data["struct"]["pdbx_descriptor"]]
@@ -148,7 +140,7 @@ display(resolution)
 resolution.to_csv(DATA / "PDB_resolution.csv", header=True, index=False)
 
 # inter_mol_metalic_bond_count.
-
+# turn off print statements later, mainly for testing purposes currently
 metal_mol_bonds = pd.DataFrame(
     [
         [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["inter_mol_metalic_bond_count"]]
@@ -184,6 +176,63 @@ protein_mw_min = pd.DataFrame(
 )
 display(protein_mw_min)
 protein_mw_min.to_csv(DATA / "protein_mw_min.csv", header=True, index=False)
+
+# Polymer entity count. Will provide us the number of unique protein chains.
+# Example 1BOU returns "2" because there is both an alpha and beta chain
+# This information is useful as there may be mutliple metal sites and the
+# metal site could only be in one protein. For example, 1BOU has two metal sites,
+# both in beta chain but not alpha
+
+polymer_count = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["polymer_entity_count"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "polymer_entity_count"],
+)
+display(polymer_count)
+polymer_count.to_csv(DATA / "polymer_entity_count.csv", header=True, index=False)
+
+# Nonpolymer entity count, i.e number of unique ligands or non-protein components.
+# Example "2" for 1B4U, ligand plus Fe
+
+nonpolymer_count = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["nonpolymer_entity_count"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "nonpolymer_entity_count"],
+)
+display(nonpolymer_count)
+nonpolymer_count.to_csv(DATA / "nonpolymer_count.csv", header=True, index=False)
+
+# deposited_unmodeled_polymer_monomer_count. Reports back number of missing residues
+# Example "1B4U                22" meainng 22 AAs were not in PDB structures
+
+number_of_missing_AAs = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["deposited_unmodeled_polymer_monomer_count"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "deposited_unmodeled_polymer_monomer_count"],
+)
+display(number_of_missing_AAs)
+number_of_missing_AAs.to_csv(DATA / "number_of_missing_AAs.csv", header=True, index=False)
+
+# Polymer composition. Is it a monomer? Dimer? Heterodimer, etc. Will help me
+# decide good subroutines to build for MCPB.py, since if only one metal site, could just do one subunit. If multiple subunits, will need to make sure tleap files are constructed accordingly
+# Also if multiple metal sites which are chemical equivalent, will want to
+#automatically consider the highest resolution one for parameterization/further study
+
+polymer_composition = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["polymer_composition"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "polymer_composition"],
+)
+display(polymer_composition)
+polymer_composition.to_csv(DATA / "polymer_composition.csv", header=True, index=False)
 
 # Fetch fasta sequence.
 for pdb_id in pdb_ids:
