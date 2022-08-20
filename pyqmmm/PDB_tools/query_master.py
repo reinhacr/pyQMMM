@@ -24,6 +24,12 @@ from IPython.display import display
 from rdkit.Chem.Draw import IPythonConsole
 IPythonConsole.ipython_useSVG=True
 
+# Code requires defined paths, and a list of PDB IDs in a file. One per line, no extra characters currently, aka 
+"1B4U
+1BOU
+...
+..."
+
 # This code was adapted from https://projects.volkamerlab.org/teachopencadd/talktorials/T008_query_pdb.html
 
 # Our goal here is to pass a list of PDBs I have curated from the PDB and
