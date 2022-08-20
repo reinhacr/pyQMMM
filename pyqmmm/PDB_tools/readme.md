@@ -1,6 +1,8 @@
 
 # QueryPDB script
 
+# THIS DOCUMENTATION IS STILL INCOMPLETE
+
 ## Table of Contents
 1. Overview 
     - Introduction
@@ -38,7 +40,7 @@ Copyright
 
 Acknowledgements
 Author: Clorice R. Reinhardt
-Adapted from X, Y, Z.
+Adapted from Sydow, D., Morger, A., Driller, M. et al. talktutorials with additional features from Biotite and PyPDB. 
 
 References:
 Sydow, D., Morger, A., Driller, M. et al. TeachOpenCADD: a teaching platform for computer-aided drug design using open source packages and data. J Cheminform 11, 29 (2019). 
