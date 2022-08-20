@@ -63,9 +63,6 @@ def describe_one_pdb_id(pdb_id):
 
 # Collect the data. Use a progress bar for sanity
 pdbs_data = [describe_one_pdb_id(pdb_id) for pdb_id in tqdm(pdb_ids)]
-print(pdbs_data[0]["struct"])
-print(pdbs_data[0]["refine"])
-print(pdbs_data[0]["rcsb_primary_citation"])
 
 # Pull out properties we are interested in from the metadata PyPdb collected for us
 # Collecting structure keywords, text associated with structure, resolution,
@@ -94,7 +91,7 @@ struct_keywords_text = pd.DataFrame(
 display(struct_keywords_text)
 struct_keywords_text.to_csv(DATA / "struct_keywords_text.csv", header=True, index=False)
 
-# this is the descriptor associated with the molecule, i.e ""
+# this is the descriptor associated with the molecule, i.e "PROTOCATECHUATE 4,5-DIOXYGENASE, ..."
 PDBx_descriptor = pd.DataFrame(
     [
         [pdb_data["entry"]["id"], pdb_data["struct"]["pdbx_descriptor"]]
@@ -219,10 +216,8 @@ number_of_missing_AAs = pd.DataFrame(
 display(number_of_missing_AAs)
 number_of_missing_AAs.to_csv(DATA / "number_of_missing_AAs.csv", header=True, index=False)
 
-# Polymer composition. Is it a monomer? Dimer? Heterodimer, etc. Will help me
-# decide good subroutines to build for MCPB.py, since if only one metal site, could just do one subunit. If multiple subunits, will need to make sure tleap files are constructed accordingly
-# Also if multiple metal sites which are chemical equivalent, will want to
-#automatically consider the highest resolution one for parameterization/further study
+# Polymer composition. Is it a monomer? Dimer? Heterodimer, etc.
+# Example output: "1B4U  heteromeric protein"
 
 polymer_composition = pd.DataFrame(
     [
@@ -233,6 +228,40 @@ polymer_composition = pd.DataFrame(
 )
 display(polymer_composition)
 polymer_composition.to_csv(DATA / "polymer_composition.csv", header=True, index=False)
+
+# Atom count of deposited PDB.
+atom_count = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_info"]["deposited_atom_count"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "deposited_atom_count"],
+)
+display(atom_count)
+atom_count.to_csv(DATA / "atom_count.csv", header=True, index=False)
+
+# Atom count of deposited PDB.
+pubmed_id = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["rcsb_entry_container_identifiers"]["pubmed_id"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "pubmed_id"],
+)
+display(pubmed_id)
+pubmed_id.to_csv(DATA / "pubmed_id.csv", header=True, index=False)
+
+# ligand names obtained by getting res types no checked for bond angle geomtry.
+#This is typically non standard residues, so will include iron, etc
+ligand_names = pd.DataFrame(
+    [
+        [pdb_data["entry"]["id"], pdb_data["pdbx_vrpt_summary"]["restypes_notchecked_for_bond_angle_geometry"]]
+        for pdb_data in pdbs_data
+    ],
+    columns=["pdb_id", "restypes_notchecked_for_bond_angle_geometry"],
+)
+display(ligand_names)
+ligand_names.to_csv(DATA / "ligand_names.csv", header=True, index=False)
 
 # Fetch fasta sequence.
 for pdb_id in pdb_ids:
